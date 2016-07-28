@@ -1,114 +1,106 @@
-var Enemy = function(x, y, speed) {
+function Parent(x, y, speed) {
+    "use strict";
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+    this.render = function() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    };
+}
+
+function inheritPrototype(childObject, parentObject) {
+    "use strict";
+    var copyOfParent = Object.create(parentObject.prototype);
+    copyOfParent.constructor = childObject;
+    childObject.prototype = copyOfParent;
+}
+
+function Enemy(x, y, speed) {
+    "use strict";
+    Parent.call(this, x, y, speed);
     this.sprite = 'images/enemy-bug.png';
-    this.x = x;
-    this.y = y; 
-    this.speed = speed;
     this.collisionWidth = 30;
     this.collisionHeight = 30;
-};
+}
 
-// A very special enemy subclass
-var Trump = function(x, y, speed){
-    this.sprite = 'images/trump-bug.png';
-    this.x = x;
-    this.y = y; 
-    this.speed = speed;
-    this.collisionWidth = 30;
-    this.collisionHeight = 30;
-};
+inheritPrototype(Enemy, Parent);
 
-Trump.prototype = new Enemy();
-Trump.prototype.constructor = Trump;
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks <-- this gives me strange results so it's been omitted
-Enemy.prototype.update = function(dt, player) {
-        if(this.x >= 500) {
+Enemy.prototype = {
+    constructor: Enemy,
+    // Update the enemy's position, required method for game
+    // Parameter: dt, a time delta between ticks <-- this gives me strange results so it's been omitted
+    update: function(dt, player) {
+        "use strict";
+        if (this.x >= 500) {
             this.x = this.x - 500;
-        } else if(this.x <= 500){
+        } else if (this.x <= 500) {
             this.x = this.x + this.speed;
             this.checkCollision(player);
-        }     
-};
-
-// Checks for collision with the player
-Enemy.prototype.checkCollision = function(player) {
-    if (Math.abs(player.x - this.x) < this.collisionWidth && Math.abs(player.y - this.y) < this.collisionHeight) {
-         player.reset();
         }
-};
-
-
-// Draws the enemy on the screen
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    };
-
-
-// This is the player class, includes a prompt for character selection
-var Player = function(x, y) {
-        this.sprite = function() {
-            var charSelect = prompt("Welcome to Dodge the Roach! Would you like to be a boy or girl?");
-            if(charSelect.toUpperCase() === "girl".toUpperCase()) {
-                charSelect = prompt("Are you a princess?");
-                if(charSelect.toUpperCase() === "yes".toUpperCase()) {
-                    this.sprite = 'images/char-princess-girl.png';
-                } else {
-                this.sprite = 'images/char-pink-girl.png';
-                }
-            } else if(charSelect.toUpperCase() === "boy".toUpperCase()){
-                this.sprite = 'images/char-boy.png';
-            }
-        };
-        this.x = x;
-        this.y = y;
-        this.speed = 20;
-        this.reset = function() {
-            this.x = 200;
-            this.y = 400;
-        };
-    };
-
-Player.prototype.update = function(dt) {
-}; 
-
-
-Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-// This handles player movement
-Player.prototype.handleInput = function(keyCode){
-    if(keyCode === 'up' && this.y >= 10) {
-        this.y = this.y - this.speed;
-            if(this.y === 0) {
-            alert("You've won the game!");
+    },
+    // Checks for collision with the player
+    checkCollision: function(player) {
+        "use strict";
+        if (Math.abs(player.x - this.x) < this.collisionWidth && Math.abs(player.y - this.y) < this.collisionHeight) {
             player.reset();
         }
-    } else if(keyCode === 'down' && this.y <= 400) {
-        this.y = this.y + this.speed;
-    } else if(keyCode === 'left' && this.x >= 0) {
-        this.x = this.x - this.speed;
-    } else if(keyCode === 'right' && this.x <= 400) {
-        this.x = this.x + this.speed;
-    }
+    },
 };
 
-   
-var player = new Player(200,400);
-player.sprite();
+function Player(x, y) {
+    "use strict";
+    Parent.call(this, x, y);
+    this.sprite = function() {
+        var charSelect = prompt("Welcome to Dodge the Roach! Would you like to be a boy or girl?");
+        if (charSelect.toUpperCase() === "girl".toUpperCase()) {
+            charSelect = prompt("Are you a princess?");
+            if (charSelect.toUpperCase() === "yes".toUpperCase()) {
+                this.sprite = 'images/char-princess-girl.png';
+            } else {
+                this.sprite = 'images/char-pink-girl.png';
+            }
+        } else if (charSelect.toUpperCase() === "boy".toUpperCase()) {
+            this.sprite = 'images/char-boy.png';
+        }
+    };
+    this.tileHeight = 101;
+    this.tileWidth = 83;
+    this.reset = function() {
+        this.x = 200;
+        this.y = 400;
+    };
+}
 
-var enemy1 = new Enemy(25, 75, 5);
-var enemy2 = new Trump(75, 150, 3);
-var enemy3 = new Enemy(0, 225, 10);
+inheritPrototype(Player, Parent);
 
-var allEnemies = [];
-allEnemies.push(enemy1, enemy2, enemy3);
+Player.prototype = {
+    constructor: Player,
+    update: function(dt) {
+        "use strict";
+    },
+    // This handles player movement
+    handleInput:function(keyCode) {
+        "use strict";
+        if (keyCode === 'up' && this.y > -105) {
+            this.y = this.y - this.tileHeight;
+            if (this.y === -105) {
+                alert("You've won the game!");
+                this.reset();
+            }
+        } else if (keyCode === 'down' && this.y < 400) {
+            this.y = this.y + this.tileHeight;
+        } else if (keyCode === 'left' && this.x > 0) {
+            this.x = this.x - this.tileWidth;
+        } else if (keyCode === 'right' && this.x < 400) {
+            this.x = this.x + this.tileWidth;
+        }
+    } 
+};
 
-
-// This listens for key presses and sends the keys to your
+// This listens for key presses and sends the keys to the
 // Player.handleInput() method. 
 document.addEventListener('keyup', function(e) {
+    "use strict";
     var allowedKeys = {
         37: 'left',
         38: 'up',
@@ -118,3 +110,13 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+var player = new Player(200, 400);
+player.sprite();
+
+var enemy1 = new Enemy(25, 75, 5);
+var enemy2 = new Enemy(75, 150, 3);
+var enemy3 = new Enemy(0, 225, 10);
+
+var allEnemies = [];
+allEnemies.push(enemy1, enemy2, enemy3);
