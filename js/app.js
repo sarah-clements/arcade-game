@@ -50,19 +50,7 @@ Enemy.prototype = {
 function Player(x, y) {
     "use strict";
     Parent.call(this, x, y);
-    this.sprite = function() {
-        var charSelect = prompt("Welcome to Dodge the Roach! Would you like to be a boy or girl?");
-        if (charSelect.toUpperCase() === "girl".toUpperCase()) {
-            charSelect = prompt("Are you a princess?");
-            if (charSelect.toUpperCase() === "yes".toUpperCase()) {
-                this.sprite = 'images/char-princess-girl.png';
-            } else {
-                this.sprite = 'images/char-pink-girl.png';
-            }
-        } else if (charSelect.toUpperCase() === "boy".toUpperCase()) {
-            this.sprite = 'images/char-boy.png';
-        }
-    };
+    // sprite has been moved
     this.tileHeight = 101;
     this.tileWidth = 83;
     this.reset = function() {
@@ -75,8 +63,22 @@ inheritPrototype(Player, Parent);
 
 Player.prototype = {
     constructor: Player,
-    update: function(dt) {
+    update:function(dt) {
         "use strict";
+    },
+    // This prompts the player to select a character, which is then assigned to sprite
+    charSelect:function() {
+        var character = prompt("Welcome to Dodge the Roach! Would you like to be a boy or girl?");
+        if (character.toUpperCase() === "girl".toUpperCase()) {
+            character = prompt("Are you a princess?");
+            if (character.toUpperCase() === "yes".toUpperCase()) {
+                this.sprite = 'images/char-princess-girl.png';
+            } else {
+                this.sprite = 'images/char-pink-girl.png';
+            }
+        } else if (character.toUpperCase() === "boy".toUpperCase()) {
+            this.sprite = 'images/char-boy.png';
+        }
     },
     // This handles player movement
     handleInput:function(keyCode) {
@@ -112,7 +114,7 @@ document.addEventListener('keyup', function(e) {
 });
 
 var player = new Player(200, 400);
-player.sprite();
+player.charSelect();
 
 var enemy1 = new Enemy(25, 75, 5);
 var enemy2 = new Enemy(75, 150, 3);
