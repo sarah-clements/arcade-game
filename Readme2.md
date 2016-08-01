@@ -1,0 +1,1 @@
+The objective of this project was to learn object oriented programming. I created the Enemy and Player subclasses (from Parent class), along with methods for functionality on app.js. All other assets were provided by Udacity (along with the render method and key-listen function on app.js). 
